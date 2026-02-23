@@ -16,30 +16,45 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log('useEffect triggered with query:', query);
     if (query) {
       setSearchInput(query);
       performSearch(query);
+    } else {
+      console.log('No query parameter found');
     }
   }, [query]);
 
   const performSearch = async (searchQuery: string) => {
-    if (!searchQuery.trim()) return;
+    console.log('performSearch called with:', searchQuery);
+    if (!searchQuery.trim()) {
+      console.log('Search query is empty, returning');
+      return;
+    }
     
     setLoading(true);
+    console.log('Setting loading to true');
     try {
+      console.log('Calling searchProducts with:', searchQuery);
       const results = await searchProducts(searchQuery);
+      console.log('Search results received:', results);
       setProducts(results);
     } catch (error) {
       console.error('Search error:', error);
     } finally {
+      console.log('Setting loading to false');
       setLoading(false);
     }
   };
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('handleSearch called with searchInput:', searchInput);
     if (searchInput.trim()) {
+      console.log('Setting search params with:', searchInput);
       setSearchParams({ q: searchInput });
+    } else {
+      console.log('Search input is empty, not setting params');
     }
   };
 
@@ -74,6 +89,15 @@ export default function SearchPage() {
       {/* Results */}
       <section className="section-spacing">
         <div className="container-custom">
+          {/* Debug Info */}
+          <div className="mb-4 p-4 bg-yellow-100 border border-yellow-300 rounded">
+            <h4 className="font-bold">Debug Info:</h4>
+            <p>Query: "{query}"</p>
+            <p>Loading: {loading ? 'true' : 'false'}</p>
+            <p>Products found: {products.length}</p>
+            <p>Search input: "{searchInput}"</p>
+          </div>
+
           {query && (
             <div className="mb-8">
               <h2 className="text-2xl font-semibold">
@@ -105,7 +129,7 @@ export default function SearchPage() {
               <Search className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
               <h3 className="text-2xl font-bold mb-2">No products found</h3>
               <p className="text-muted-foreground mb-6">
-                Try searching with different keywords
+                Try searching with different keywords. Query: "{query}"
               </p>
               <Link to="/products">
                 <Button>Browse All Products</Button>

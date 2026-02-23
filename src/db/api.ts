@@ -100,14 +100,23 @@ export async function getRelatedProducts(productId: string, categoryId: string, 
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
+  console.log('searchProducts called with query:', query);
+  const searchQuery = `name.ilike.%${query}%,description.ilike.%${query}%,origin.ilike.%${query}%`;
+  console.log('Constructed search query:', searchQuery);
+  
   const { data, error } = await supabase
     .from('products')
     .select('*, category:categories(*)')
-    .or(`name.ilike.%${query}%,description.ilike.%${query}%,origin.ilike.%${query}%`)
+    .or(searchQuery)
     .limit(20)
     .order('rating', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    console.error('Supabase search error:', error);
+    throw error;
+  }
+  
+  console.log('Search returned data:', data);
   return Array.isArray(data) ? data : [];
 }
 
