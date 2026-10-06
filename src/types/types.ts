@@ -74,8 +74,6 @@ export interface Order {
   status: OrderStatus;
   payment_method: PaymentMethod;
   payment_status: PaymentStatus;
-  stripe_session_id: string | null;
-  stripe_payment_intent_id: string | null;
   customer_email: string | null;
   customer_name: string | null;
   customer_phone: string | null;

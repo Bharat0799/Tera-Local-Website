@@ -57,18 +57,12 @@ function randomCode(length: number) {
   return Math.random().toString(36).slice(2, 2 + length).toUpperCase();
 }
 
-function maskCardNumber(cardNumber: string) {
-  const digits = cardNumber.replace(/\D/g, "");
-  const last4 = digits.slice(-4).padStart(4, "0");
-  return `**** **** **** ${last4}`;
-}
-
 function getPaymentStatus(paymentMethod: PaymentMethod): PaymentStatus {
   if (paymentMethod === "cod") {
     return "cod_pending";
   }
 
-  return "paid";
+  return "pending";
 }
 
 function normalizePaymentMethod(paymentMethod?: PaymentMethod): PaymentMethod {
@@ -92,8 +86,8 @@ function buildTrackingEvents(createdAt: string, paymentMethod: PaymentMethod): T
       dayOffset: 0,
       description:
         paymentMethod === "cod"
-          ? "Your order was placed successfully. Payment will be collected on delivery."
-          : "Your payment was authorized and your order is confirmed.",
+          ? "A demo order was saved locally. No payment or delivery is arranged."
+          : "A demo order was saved locally. No payment was processed.",
       label: "Order placed",
       status: "confirmed",
     },
@@ -196,15 +190,13 @@ function hydrateOrder(order: StoredOrderLike): Order {
     currency: order.currency || "INR",
     payment_method: paymentMethod,
     payment_status: order.payment_status || getPaymentStatus(paymentMethod),
-    stripe_session_id: order.stripe_session_id || null,
-    stripe_payment_intent_id: order.stripe_payment_intent_id || null,
     customer_email: order.customer_email || null,
     customer_name: order.customer_name || null,
     customer_phone: order.customer_phone || null,
     shipping_address: order.shipping_address || null,
     tracking_number: order.tracking_number || `TRK-${randomCode(10)}`,
     created_at: createdAt,
-    estimated_delivery,
+    estimated_delivery: estimatedDelivery ?? null,
     status: deriveStatus({
       ...(order as Order),
       created_at: createdAt,
@@ -218,8 +210,6 @@ function hydrateOrder(order: StoredOrderLike): Order {
       payment_status: order.payment_status || getPaymentStatus(paymentMethod),
       shipping_address: order.shipping_address || null,
       status: order.status || "confirmed",
-      stripe_payment_intent_id: order.stripe_payment_intent_id || null,
-      stripe_session_id: order.stripe_session_id || null,
       total_amount: typeof order.total_amount === "number" ? order.total_amount : 0,
       tracking_events: hydratedEvents,
       tracking_number: order.tracking_number || `TRK-${randomCode(10)}`,
@@ -268,10 +258,6 @@ export function createDemoOrder(args: {
   cartItems: CartItem[];
   checkoutData: CheckoutFormData;
   deliveryFee: number;
-  paymentDetails?: {
-    cardNumber?: string;
-    upiId?: string;
-  };
 }) {
   const createdAt = new Date().toISOString();
   const orderId = `TL${Date.now().toString().slice(-8)}`;
@@ -285,13 +271,6 @@ export function createDemoOrder(args: {
   }));
   const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const total = subtotal + args.deliveryFee;
-  const paymentLabel =
-    args.checkoutData.payment_method === "card"
-      ? maskCardNumber(args.paymentDetails?.cardNumber || "")
-      : args.checkoutData.payment_method === "upi"
-        ? args.paymentDetails?.upiId || "UPI"
-        : "Cash on delivery";
-
   const order: Order = {
     id: orderId,
     user_id: null,
@@ -301,8 +280,6 @@ export function createDemoOrder(args: {
     status: "confirmed",
     payment_method: args.checkoutData.payment_method,
     payment_status: getPaymentStatus(args.checkoutData.payment_method),
-    stripe_session_id: null,
-    stripe_payment_intent_id: paymentLabel,
     customer_email: args.checkoutData.email,
     customer_name: args.checkoutData.full_name,
     customer_phone: args.checkoutData.phone,

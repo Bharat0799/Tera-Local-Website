@@ -1,4 +1,3 @@
-import React from 'react';
 import { Leaf, Heart, Users, Truck } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import NewsletterSection from '@/components/shared/NewsletterSection';

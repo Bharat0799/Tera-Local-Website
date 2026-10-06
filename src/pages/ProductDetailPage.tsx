@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Minus, Plus, ShoppingCart, Star, ChevronLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
@@ -19,6 +18,7 @@ import { resolveImageUrl } from '@/lib/image';
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const { addItem } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -58,7 +58,7 @@ export default function ProductDetailPage() {
   const handleBuyNow = () => {
     if (product) {
       addItem(product, quantity);
-      window.location.href = '/cart';
+      navigate('/cart');
     }
   };
 

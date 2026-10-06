@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { CheckCircle, PackageCheck, Truck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,16 +8,16 @@ import { Progress } from '@/components/ui/progress';
 import { getStoredOrderById } from '@/lib/demo-orders';
 
 const paymentMethodLabels = {
-  card: 'Card paid',
-  cod: 'Cash on delivery',
-  upi: 'UPI paid',
+  card: 'Card demo (not charged)',
+  cod: 'COD demo (not charged)',
+  upi: 'UPI demo (not charged)',
 };
 
 const paymentStatusLabels = {
-  cod_pending: 'Collect on delivery',
-  failed: 'Payment failed',
-  paid: 'Paid successfully',
-  pending: 'Awaiting payment',
+  cod_pending: 'No payment collected (demo)',
+  failed: 'No real payment attempted',
+  paid: 'Demo only; no payment processed',
+  pending: 'No payment collected (demo)',
 };
 
 export default function PaymentSuccessPage() {
@@ -40,9 +40,9 @@ export default function PaymentSuccessPage() {
         <Card className="max-w-md w-full">
           <CardContent className="p-8 text-center space-y-6">
             <PackageCheck className="h-16 w-16 mx-auto text-primary" />
-            <h1 className="text-3xl font-bold">Order Not Found</h1>
+            <h1 className="text-3xl font-bold">Demo Order Not Found</h1>
             <p className="text-muted-foreground">
-              We could not find this order in your browser session. Please place a new order or track an existing one manually.
+              Demo orders are stored in this browser only. Place a new demo order or track an order saved here.
             </p>
             <div className="flex gap-4">
               <Link to="/checkout" className="flex-1">
@@ -67,9 +67,9 @@ export default function PaymentSuccessPage() {
               <div className="bg-primary text-primary-foreground p-8 text-center space-y-4">
                 <CheckCircle className="h-16 w-16 mx-auto" />
                 <div>
-                  <h1 className="text-4xl font-bold">Order Confirmed</h1>
+                  <h1 className="text-4xl font-bold">Demo Order Saved</h1>
                   <p className="text-lg opacity-90 mt-2">
-                    Your order is placed and ready to move through our delivery pipeline.
+                    This order is stored in this browser only. No payment or real delivery is arranged.
                   </p>
                 </div>
               </div>
@@ -97,7 +97,7 @@ export default function PaymentSuccessPage() {
                 <div className="rounded-xl border bg-accent/40 p-6 space-y-4">
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold">Shipment Progress</h2>
+                      <h2 className="text-2xl font-bold">Demo Delivery Timeline</h2>
                       <p className="text-muted-foreground">
                         Estimated delivery by{' '}
                         {order.estimated_delivery
@@ -109,7 +109,7 @@ export default function PaymentSuccessPage() {
                           : 'Soon'}
                       </p>
                     </div>
-                    <Badge variant="secondary">{order.status.replaceAll('_', ' ')}</Badge>
+                    <Badge variant="secondary">{order.status.replace(/_/g, ' ')}</Badge>
                   </div>
 
                   <Progress value={progressValue} />
@@ -141,19 +141,19 @@ export default function PaymentSuccessPage() {
                     <div className="rounded-lg border p-4">
                       <p className="font-semibold">1. Packed fresh</p>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Your order enters processing immediately and gets packed by our demo warehouse flow.
+                        This is a simulated timeline; no real order is sent to a warehouse.
                       </p>
                     </div>
                     <div className="rounded-lg border p-4">
                       <p className="font-semibold">2. Tracking updates</p>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Each stage is stored locally so you can revisit the tracking page any time.
+                        Demo tracking data is stored locally so you can revisit it in this browser.
                       </p>
                     </div>
                     <div className="rounded-lg border p-4">
                       <p className="font-semibold">3. Delivery complete</p>
                       <p className="text-sm text-muted-foreground mt-2">
-                        Card and UPI orders show paid status, while COD stays payable at handoff.
+                        Payment options are display-only. No card, UPI, or delivery payment is collected.
                       </p>
                     </div>
                   </div>

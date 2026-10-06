@@ -1,5 +1,14 @@
 ## Project Info
 
+This is a static React + TypeScript + Vite storefront. Product and category records come from
+`src/db/mock-data.ts`; cart, demo user, demo reviews, newsletter signups, and demo orders are
+stored in the current browser's local storage. These local features are demonstrations only:
+they do not provide secure authentication, send newsletter subscriptions, process payments,
+or create real orders.
+
+Product and category photos remain at their existing Unsplash URLs. The browser must be able
+to access Unsplash to load those images.
+
 ## Project Directory
 
 ```
@@ -33,7 +42,7 @@
 
 ## Tech Stack
 
-Vite, TypeScript, React, Supabase
+Vite, TypeScript, React, local static data, and browser local storage
 
 ## Development Guidelines
 
@@ -80,19 +89,11 @@ Alternatively, use the official installer: Visit the Node.js official website. D
 # Step 6: if step 5 failed, try this command to start the development server: npx vite --host 127.0.0.1
 ```
 
-### How to develop backend services?
-
-Configure environment variables and install relevant dependencies.If you need to use a database, please use the official version of Supabase.
-
 ## GitHub Pages deployment
 
 The `Deploy to GitHub Pages` workflow builds the Vite app from `main` and publishes only `dist/`.
-Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` under **Settings → Secrets and variables →
-Actions → Variables**. Also set **Settings → Pages → Build and deployment → Source** to
-**GitHub Actions**. These `VITE_` values are included in browser code; use only the public
-Supabase anon key, never a service-role key or other private server secret.
-
-The frontend workflow does not deploy the existing Supabase Edge Functions or database migrations.
+No Supabase environment variables or backend services are required. Set
+**Settings → Pages → Build and deployment → Source** to **GitHub Actions**.
 
 ## Learn More
 

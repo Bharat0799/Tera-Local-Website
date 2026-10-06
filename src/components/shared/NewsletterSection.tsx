@@ -15,7 +15,7 @@ export default function NewsletterSection() {
     setLoading(true);
     try {
       await subscribeNewsletter(email);
-      toast.success('Successfully subscribed to newsletter!');
+      toast.success('Demo subscription saved in this browser.');
       setEmail('');
     } catch (error) {
       toast.error('Failed to subscribe. Please try again.');

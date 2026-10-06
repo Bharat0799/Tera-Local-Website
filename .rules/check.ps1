@@ -6,7 +6,6 @@ Write-Host "Running ast-grep scans..."
 
 & npx ast-grep scan -r .rules/SelectItem.yml
 & npx ast-grep scan -r .rules/contrast.yml
-& npx ast-grep scan -r .rules/supabase-google-sso.yml
 & npx ast-grep scan -r .rules/toast-hook.yml
 
 $useauth_output = & npx ast-grep scan -r .rules/useAuth.yml 2>$null

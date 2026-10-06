@@ -37,13 +37,6 @@ export default function CheckoutPage() {
     postal_code: '',
     payment_method: 'card',
   });
-  const [cardData, setCardData] = useState({
-    card_name: '',
-    card_number: '',
-    expiry: '',
-    cvv: '',
-  });
-  const [upiId, setUpiId] = useState('');
   const [showOrders, setShowOrders] = useState(false);
   const recentDemoOrders = getStoredOrders().slice(0, 5);
   const handleLogout = () => {
@@ -58,10 +51,8 @@ export default function CheckoutPage() {
       postal_code: '',
       payment_method: 'card',
     });
-    setCardData({ card_name: '', card_number: '', expiry: '', cvv: '' });
-    setUpiId('');
     setShowOrders(false);
-    toast.success('Logged out of demo profile');
+    toast.success('Demo checkout details cleared.');
   };
 
   const deliveryThreshold = 999;
@@ -85,55 +76,12 @@ export default function CheckoutPage() {
     }));
   };
 
-  const validatePayment = () => {
-    if (formData.payment_method === 'card') {
-      const digits = cardData.card_number.replace(/\D/g, '');
-      if (cardData.card_name.trim().length < 3) {
-        toast.error('Enter the name on card');
-        return false;
-      }
-      if (digits.length < 16) {
-        toast.error('Enter a valid 16-digit card number');
-        return false;
-      }
-      if (!/^\d{2}\/\d{2}$/.test(cardData.expiry)) {
-        toast.error('Use expiry in MM/YY format');
-        return false;
-      }
-      if (!/^\d{3}$/.test(cardData.cvv)) {
-        toast.error('Enter a valid 3-digit CVV');
-        return false;
-      }
-    }
-
-    if (formData.payment_method === 'upi') {
-      if (!/^[a-zA-Z0-9.\-_]{2,}@[a-zA-Z]{2,}$/.test(upiId.trim())) {
-        toast.error('Enter a valid UPI ID');
-        return false;
-      }
-    }
-
-    return true;
-  };
-
   const simulateProcessingMessage = () => {
-    if (formData.payment_method === 'card') {
-      return 'Authorizing your card and placing the order...';
-    }
-
-    if (formData.payment_method === 'upi') {
-      return 'Waiting for UPI approval and confirming your order...';
-    }
-
-    return 'Reserving your order for cash on delivery...';
+    return 'Saving your demo order in this browser...';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (!validatePayment()) {
-      return;
-    }
 
     setLoading(true);
     toast.loading(simulateProcessingMessage(), { id: 'checkout-demo' });
@@ -145,10 +93,6 @@ export default function CheckoutPage() {
         cartItems: items,
         checkoutData: formData,
         deliveryFee,
-        paymentDetails: {
-          cardNumber: cardData.card_number,
-          upiId,
-        },
       });
 
       toast.success(`Order ${order.id} placed successfully`, { id: 'checkout-demo' });
@@ -195,17 +139,17 @@ export default function CheckoutPage() {
         <div className="container-custom">
           <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="text-4xl md:text-5xl font-bold mb-2">Secure Checkout</h1>
+              <h1 className="text-4xl md:text-5xl font-bold mb-2">Demo Checkout</h1>
               <p className="text-muted-foreground text-lg">
-                Shipping, payment, and order confirmation in one smooth flow.
+                This demo stores your order in this browser only. No payment is collected.
               </p>
             </div>
             <div className="flex items-center gap-3 rounded-lg border bg-accent px-4 py-3">
               <ShieldCheck className="h-5 w-5 text-primary" />
               <div>
-                <p className="font-semibold text-sm">Demo payment enabled</p>
+                <p className="font-semibold text-sm">Demo checkout only</p>
                 <p className="text-xs text-muted-foreground">
-                  Card, UPI, and COD will all complete like a live store.
+                  Do not enter payment credentials. No payment will be processed.
                 </p>
               </div>
             </div>
@@ -268,9 +212,12 @@ export default function CheckoutPage() {
                 <Card>
                   <CardContent className="p-6 space-y-5">
                     <div className="flex items-center justify-between">
-                      <h2 className="text-2xl font-bold">Choose Payment</h2>
+                      <h2 className="text-2xl font-bold">Demo Payment Method</h2>
                       <Badge variant="outline">100% demo-safe</Badge>
                     </div>
+                    <p className="text-sm text-muted-foreground">
+                      Choose a display option only. This static demo does not collect payment details or process payments.
+                    </p>
                     <Separator />
 
                     <RadioGroup
@@ -286,53 +233,15 @@ export default function CheckoutPage() {
                             <CreditCard className="h-5 w-5" />
                             <div>
                               <p className="font-semibold">Credit / Debit Card</p>
-                              <p className="text-sm text-muted-foreground">Visa, Mastercard, RuPay, Amex</p>
+                              <p className="text-sm text-muted-foreground">Demo option only; no payment will be made</p>
                             </div>
                           </Label>
                           <Badge>Instant</Badge>
                         </div>
 
                         {formData.payment_method === 'card' && (
-                          <div className="grid md:grid-cols-2 gap-4 rounded-lg border bg-accent/50 p-4">
-                            <div className="md:col-span-2">
-                              <Label htmlFor="card_name">Name on Card *</Label>
-                              <Input
-                                id="card_name"
-                                value={cardData.card_name}
-                                onChange={e => setCardData(prev => ({ ...prev, card_name: e.target.value }))}
-                                placeholder="Bharat Kumar"
-                              />
-                            </div>
-                            <div className="md:col-span-2">
-                              <Label htmlFor="card_number">Card Number *</Label>
-                              <Input
-                                id="card_number"
-                                value={cardData.card_number}
-                                onChange={e => setCardData(prev => ({ ...prev, card_number: e.target.value }))}
-                                placeholder="4111 1111 1111 1111"
-                                maxLength={19}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="expiry">Expiry *</Label>
-                              <Input
-                                id="expiry"
-                                value={cardData.expiry}
-                                onChange={e => setCardData(prev => ({ ...prev, expiry: e.target.value }))}
-                                placeholder="08/28"
-                                maxLength={5}
-                              />
-                            </div>
-                            <div>
-                              <Label htmlFor="cvv">CVV *</Label>
-                              <Input
-                                id="cvv"
-                                value={cardData.cvv}
-                                onChange={e => setCardData(prev => ({ ...prev, cvv: e.target.value }))}
-                                placeholder="123"
-                                maxLength={3}
-                              />
-                            </div>
+                          <div className="rounded-lg border bg-accent/50 p-4 text-sm text-muted-foreground">
+                            Demo only. No card number, expiry date, or security code is requested or processed.
                           </div>
                         )}
 
@@ -342,26 +251,15 @@ export default function CheckoutPage() {
                             <Smartphone className="h-5 w-5" />
                             <div>
                               <p className="font-semibold">UPI</p>
-                              <p className="text-sm text-muted-foreground">Google Pay, PhonePe, Paytm, BHIM</p>
+                              <p className="text-sm text-muted-foreground">Demo option only; no payment will be made</p>
                             </div>
                           </Label>
                           <Badge variant="secondary">Fastest</Badge>
                         </div>
 
                         {formData.payment_method === 'upi' && (
-                          <div className="rounded-lg border bg-accent/50 p-4 space-y-3">
-                            <div>
-                              <Label htmlFor="upi_id">UPI ID *</Label>
-                              <Input
-                                id="upi_id"
-                                value={upiId}
-                                onChange={e => setUpiId(e.target.value)}
-                                placeholder="bharat@oksbi"
-                              />
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                              We simulate a real payment app approval and then confirm the order instantly.
-                            </p>
+                          <div className="rounded-lg border bg-accent/50 p-4 text-sm text-muted-foreground">
+                            Demo only. No UPI ID is requested and no payment is processed.
                           </div>
                         )}
 
@@ -371,7 +269,7 @@ export default function CheckoutPage() {
                             <Banknote className="h-5 w-5" />
                             <div>
                               <p className="font-semibold">Cash on Delivery</p>
-                              <p className="text-sm text-muted-foreground">Pay when your order reaches your doorstep</p>
+                              <p className="text-sm text-muted-foreground">Demo selection only; no real delivery is arranged</p>
                             </div>
                           </Label>
                           <Badge variant="outline">Popular</Badge>
@@ -380,7 +278,7 @@ export default function CheckoutPage() {
                         {formData.payment_method === 'cod' && (
                           <div className="rounded-lg border bg-accent/50 p-4">
                             <p className="text-sm text-muted-foreground">
-                              Your order will be confirmed now and payment will be collected at delivery.
+                              This demo does not place a real order or collect payment on delivery.
                             </p>
                           </div>
                         )}
@@ -422,7 +320,7 @@ export default function CheckoutPage() {
                                   <p className="font-medium text-sm">{o.id}</p>
                                   <p className="text-xs text-muted-foreground">Rs. {o.total_amount.toFixed(2)}</p>
                                 </div>
-                                <Badge variant="outline">{o.status.replaceAll('_', ' ')}</Badge>
+                                <Badge variant="outline">{o.status.replace(/_/g, ' ')}</Badge>
                               </div>
                             </Link>
                           ))
@@ -488,14 +386,14 @@ export default function CheckoutPage() {
                         <div>
                           <p className="font-medium">Tracking included</p>
                           <p className="text-sm text-muted-foreground">
-                            After payment, you will get an order ID and live-style delivery timeline.
+                            A demo order ID and simulated delivery timeline are saved in this browser.
                           </p>
                         </div>
                       </div>
                     </div>
 
                     <Button type="submit" size="lg" className="w-full" disabled={loading}>
-                      {loading ? 'Processing Order...' : 'Place Order Securely'}
+                      {loading ? 'Saving Demo Order...' : 'Place Demo Order'}
                     </Button>
                   </CardContent>
                 </Card>

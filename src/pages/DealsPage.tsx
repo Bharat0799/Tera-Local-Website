@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import ProductCard from '@/components/shared/ProductCard';
 import { getProducts } from '@/db/api';
 import type { Product } from '@/types';

@@ -1,12 +1,9 @@
 # Task: Build Terra Local Premium Organic Food E-commerce Platform
 
 ## Plan
-- [x] Step 1: Initialize Supabase and Database Schema
-  - [x] Initialize Supabase
-  - [x] Create database tables (products, categories, reviews, orders, order_items, newsletter_subscribers)
-  - [x] Set up RLS policies
-  - [x] Deploy payment Edge Functions (create_stripe_checkout, verify_stripe_payment)
-  - [x] Insert sample product data with real images
+- [x] Step 1: Prepare local static product and category data
+  - [x] Use src/db/mock-data.ts as the source of truth
+  - [x] Preserve existing external image URLs and local public assets
 - [x] Step 2: Design System Setup
   - [x] Create color system (forest green, burnt orange, warm tones)
   - [x] Configure typography (serif headlines, sans-serif body)
@@ -55,29 +52,29 @@
   - [x] Quantity management
   - [x] Order summary
   - [x] Empty state
-- [x] Step 11: Checkout Flow
+- [x] Step 11: Demo Checkout Flow
   - [x] Shipping information form
-  - [x] Payment method selection
+  - [x] Demo payment method selection (no payment processing)
   - [x] Order review
-  - [x] Payment success page
+  - [x] Local demo order confirmation page
 - [x] Step 12: Search Functionality
   - [x] Navbar search with debounce
   - [x] Search results dropdown
   - [x] Dedicated search results page
   - [x] Mobile search overlay
-- [x] Step 13: Database API Layer
-  - [x] Create types.ts with database types
-  - [x] Implement api.ts with all queries
+- [x] Step 13: Static Data API
+  - [x] Read products, categories, and reviews from local data
+  - [x] Save reviews and newsletter signups in localStorage
 - [x] Step 14: Validation and Testing
   - [x] Run lint and fix all issues
   - [x] Verify all features work
   - [x] Test responsive design
 
 ## Notes
-- Payment integration uses Stripe with Edge Functions
-- No login required for browsing and checkout (guest checkout supported)
+- Authentication, newsletter signup, cart, reviews, checkout, and tracking are local demos only.
+- No secure authentication, backend, real payment processing, or real order fulfillment is provided.
 - Design emphasizes cinematic, bold aesthetics with Indian agricultural heritage
 - All images sourced using image_search with real URLs
-- Database populated with 24 products across 6 categories
+- Local mock data contains products across 6 categories
 - Sample reviews added for featured products
 - All lint errors resolved successfully

@@ -168,7 +168,7 @@ export const mockProducts: Product[] = [
     farming_method: "Sun-dried and small-batch ground.",
     certification: "Single-origin",
     category_id: "cat-spices",
-    image_url: "https://images.unsplash.com/photo-1615485925873-6b796c6fcf1d?w=900&q=80",
+    image_url: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=900&q=80",
     thumbnail_urls: [],
     rating: 4.8,
     review_count: 67,

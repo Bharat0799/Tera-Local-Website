@@ -33,8 +33,6 @@ export default function TrackOrderPage() {
         status: 'confirmed',
         payment_method: 'card',
         payment_status: 'paid',
-        stripe_session_id: null,
-        stripe_payment_intent_id: null,
         customer_email: null,
         customer_name: 'Demo Customer',
         customer_phone: '9999999999',
@@ -156,7 +154,7 @@ export default function TrackOrderPage() {
                     <h2 className="text-3xl font-bold">{order.id}</h2>
                   </div>
                   <div className="flex gap-3 flex-wrap">
-                    <Badge>{order.status.replaceAll('_', ' ')}</Badge>
+                    <Badge>{order.status.replace(/_/g, ' ')}</Badge>
                     <Badge variant="secondary">{paymentStatusLabels[order.payment_status]}</Badge>
                   </div>
                 </div>
@@ -313,7 +311,7 @@ export default function TrackOrderPage() {
                               {recentOrder.customer_name} • Rs. {recentOrder.total_amount.toFixed(2)}
                             </p>
                           </div>
-                          <Badge variant="outline">{recentOrder.status.replaceAll('_', ' ')}</Badge>
+                          <Badge variant="outline">{recentOrder.status.replace(/_/g, ' ')}</Badge>
                         </div>
                       </button>
                     ))}
