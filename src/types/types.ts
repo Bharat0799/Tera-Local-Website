@@ -41,7 +41,29 @@ export interface Review {
   created_at: string;
 }
 
-export type OrderStatus = 'pending' | 'completed' | 'cancelled' | 'refunded';
+export type PaymentMethod = 'card' | 'upi' | 'cod';
+
+export type PaymentStatus = 'pending' | 'paid' | 'cod_pending' | 'failed';
+
+export type OrderStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'processing'
+  | 'packed'
+  | 'shipped'
+  | 'out_for_delivery'
+  | 'delivered'
+  | 'cancelled'
+  | 'refunded';
+
+export interface TrackingEvent {
+  id: string;
+  status: OrderStatus;
+  label: string;
+  description: string;
+  timestamp: string;
+  completed: boolean;
+}
 
 export interface Order {
   id: string;
@@ -50,12 +72,17 @@ export interface Order {
   total_amount: number;
   currency: string;
   status: OrderStatus;
+  payment_method: PaymentMethod;
+  payment_status: PaymentStatus;
   stripe_session_id: string | null;
   stripe_payment_intent_id: string | null;
   customer_email: string | null;
   customer_name: string | null;
   customer_phone: string | null;
   shipping_address: ShippingAddress | null;
+  tracking_number: string | null;
+  estimated_delivery: string | null;
+  tracking_events: TrackingEvent[];
   completed_at: string | null;
   created_at: string;
   updated_at: string;
@@ -99,5 +126,5 @@ export interface CheckoutFormData {
   city: string;
   state: string;
   postal_code: string;
-  payment_method: 'card' | 'upi' | 'cod';
+  payment_method: PaymentMethod;
 }

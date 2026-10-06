@@ -8,6 +8,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useDebounce } from '@/hooks/use-debounce';
 import { searchProducts } from '@/db/api';
 import type { Product } from '@/types';
+import { resolveImageUrl } from '@/lib/image';
 
 export default function Navbar() {
   const { totalItems } = useCart();
@@ -44,6 +45,7 @@ export default function Navbar() {
     { name: 'Home', path: '/' },
     { name: 'Products', path: '/products' },
     { name: "Today's Deals", path: '/deals' },
+    { name: 'Track Order', path: '/track-order' },
     { name: 'About', path: '/about' },
   ];
 
@@ -102,7 +104,7 @@ export default function Navbar() {
                       }}
                     >
                       <img
-                        src={product.image_url || ''}
+                        src={resolveImageUrl(product.image_url)}
                         alt={product.name}
                         className="w-12 h-12 object-cover rounded"
                       />

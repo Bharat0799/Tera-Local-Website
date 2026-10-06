@@ -9,6 +9,7 @@ import NewsletterSection from '@/components/shared/NewsletterSection';
 import { getProducts, getCategories } from '@/db/api';
 import type { Product, Category } from '@/types';
 import { Skeleton } from '@/components/ui/skeleton';
+import { resolveImageUrl } from '@/lib/image';
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -90,7 +91,7 @@ export default function HomePage() {
                   className="group relative aspect-square overflow-hidden rounded-lg"
                 >
                   <img
-                    src={category.image_url || ''}
+                    src={resolveImageUrl(category.image_url)}
                     alt={category.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />

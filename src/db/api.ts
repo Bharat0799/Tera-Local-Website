@@ -1,5 +1,62 @@
 import { supabase } from './supabase';
 import type { Product, Category, Review, Order } from '@/types';
+import { mockCategories, mockProducts, mockReviewsByProductId } from './mock-data';
+
+function logFallback(entity: string, error: unknown) {
+  console.warn(`Falling back to local ${entity} data because Supabase is unavailable.`, error);
+}
+
+function sortProducts(products: Product[], sortBy?: 'price_asc' | 'price_desc' | 'rating' | 'newest') {
+  const sorted = [...products];
+
+  switch (sortBy) {
+    case 'price_asc':
+      sorted.sort((a, b) => a.price - b.price);
+      break;
+    case 'price_desc':
+      sorted.sort((a, b) => b.price - a.price);
+      break;
+    case 'rating':
+      sorted.sort((a, b) => b.rating - a.rating);
+      break;
+    case 'newest':
+    default:
+      sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+      break;
+  }
+
+  return sorted;
+}
+
+function getMockProducts(params?: {
+  category_id?: string;
+  is_featured?: boolean;
+  is_deal?: boolean;
+  limit?: number;
+  offset?: number;
+  sort_by?: 'price_asc' | 'price_desc' | 'rating' | 'newest';
+}): Product[] {
+  let products = [...mockProducts];
+
+  if (params?.category_id) {
+    products = products.filter((product) => product.category_id === params.category_id);
+  }
+
+  if (params?.is_featured !== undefined) {
+    products = products.filter((product) => product.is_featured === params.is_featured);
+  }
+
+  if (params?.is_deal !== undefined) {
+    products = products.filter((product) => product.is_deal === params.is_deal);
+  }
+
+  products = sortProducts(products, params?.sort_by);
+
+  const start = params?.offset ?? 0;
+  const end = params?.limit ? start + params.limit : undefined;
+
+  return products.slice(start, end);
+}
 
 // Categories
 export async function getCategories(): Promise<Category[]> {
@@ -8,7 +65,10 @@ export async function getCategories(): Promise<Category[]> {
     .select('*')
     .order('name');
 
-  if (error) throw error;
+  if (error) {
+    logFallback('category', error);
+    return mockCategories;
+  }
   return Array.isArray(data) ? data : [];
 }
 
@@ -19,7 +79,10 @@ export async function getCategoryBySlug(slug: string): Promise<Category | null> 
     .eq('slug', slug)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) {
+    logFallback('category', error);
+    return mockCategories.find((category) => category.slug === slug) ?? null;
+  }
   return data;
 }
 
@@ -71,7 +134,10 @@ export async function getProducts(params?: {
 
   const { data, error } = await query;
 
-  if (error) throw error;
+  if (error) {
+    logFallback('product', error);
+    return getMockProducts(params);
+  }
   return Array.isArray(data) ? data : [];
 }
 
@@ -82,7 +148,10 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     .eq('slug', slug)
     .maybeSingle();
 
-  if (error) throw error;
+  if (error) {
+    logFallback('product', error);
+    return mockProducts.find((product) => product.slug === slug) ?? null;
+  }
   return data;
 }
 
@@ -95,14 +164,18 @@ export async function getRelatedProducts(productId: string, categoryId: string, 
     .limit(limit)
     .order('rating', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    logFallback('related product', error);
+    return mockProducts
+      .filter((product) => product.category_id === categoryId && product.id !== productId)
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, limit);
+  }
   return Array.isArray(data) ? data : [];
 }
 
 export async function searchProducts(query: string): Promise<Product[]> {
-  console.log('searchProducts called with query:', query);
   const searchQuery = `name.ilike.%${query}%,description.ilike.%${query}%,origin.ilike.%${query}%`;
-  console.log('Constructed search query:', searchQuery);
   
   const { data, error } = await supabase
     .from('products')
@@ -112,11 +185,18 @@ export async function searchProducts(query: string): Promise<Product[]> {
     .order('rating', { ascending: false });
 
   if (error) {
-    console.error('Supabase search error:', error);
-    throw error;
+    logFallback('search result', error);
+    const normalizedQuery = query.trim().toLowerCase();
+    return mockProducts
+      .filter((product) =>
+        [product.name, product.description, product.origin]
+          .filter(Boolean)
+          .some((value) => value!.toLowerCase().includes(normalizedQuery))
+      )
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, 20);
   }
   
-  console.log('Search returned data:', data);
   return Array.isArray(data) ? data : [];
 }
 
@@ -128,7 +208,10 @@ export async function getProductReviews(productId: string): Promise<Review[]> {
     .eq('product_id', productId)
     .order('created_at', { ascending: false });
 
-  if (error) throw error;
+  if (error) {
+    logFallback('review', error);
+    return mockReviewsByProductId[productId] ?? [];
+  }
   return Array.isArray(data) ? data : [];
 }
 
@@ -149,7 +232,17 @@ export async function createReview(review: {
     .select()
     .single();
 
-  if (error) throw error;
+  if (error) {
+    logFallback('review submission', error);
+    return {
+      id: `local-review-${Date.now()}`,
+      product_id: review.product_id,
+      customer_name: review.customer_name,
+      rating: review.rating,
+      comment: review.comment || null,
+      created_at: new Date().toISOString(),
+    };
+  }
   return data;
 }
 
@@ -159,7 +252,9 @@ export async function subscribeNewsletter(email: string): Promise<void> {
     .from('newsletter_subscribers')
     .insert({ email });
 
-  if (error) throw error;
+  if (error) {
+    logFallback('newsletter signup', error);
+  }
 }
 
 // Orders

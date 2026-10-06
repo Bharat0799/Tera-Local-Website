@@ -7,6 +7,7 @@ import CartPage from './pages/CartPage';
 import CheckoutPage from './pages/CheckoutPage';
 import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import SearchPage from './pages/SearchPage';
+import TrackOrderPage from './pages/TrackOrderPage';
 import type { ReactNode } from 'react';
 
 interface RouteConfig {
@@ -64,6 +65,12 @@ const routes: RouteConfig[] = [
     path: '/payment-success',
     element: <PaymentSuccessPage />,
     visible: false
+  },
+  {
+    name: 'Track Order',
+    path: '/track-order',
+    element: <TrackOrderPage />,
+    visible: true
   },
   {
     name: 'Search',

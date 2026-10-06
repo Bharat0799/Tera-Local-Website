@@ -7,6 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { Product } from '@/types';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
+import { resolveImageUrl } from '@/lib/image';
 
 interface ProductCardProps {
   product: Product;
@@ -26,7 +27,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Card className="card-hover overflow-hidden h-full">
         <div className="relative aspect-square overflow-hidden">
           <img
-            src={product.image_url || ''}
+            src={resolveImageUrl(product.image_url)}
             alt={product.name}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
           />

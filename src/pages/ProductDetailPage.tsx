@@ -15,6 +15,7 @@ import type { Product, Review } from '@/types';
 import { useCart } from '@/contexts/CartContext';
 import { toast } from 'sonner';
 import { Skeleton } from '@/components/ui/skeleton';
+import { resolveImageUrl } from '@/lib/image';
 
 export default function ProductDetailPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -129,7 +130,7 @@ export default function ProductDetailPage() {
           <div className="space-y-4">
             <div className="aspect-square overflow-hidden rounded-lg">
               <img
-                src={images[selectedImage] as string}
+                src={resolveImageUrl(images[selectedImage] as string)}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />
@@ -145,7 +146,7 @@ export default function ProductDetailPage() {
                     }`}
                   >
                     <img
-                      src={img as string}
+                      src={resolveImageUrl(img as string)}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

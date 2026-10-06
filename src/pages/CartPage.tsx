@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/contexts/CartContext';
+import { resolveImageUrl } from '@/lib/image';
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, totalPrice, totalItems } = useCart();
@@ -44,7 +45,7 @@ export default function CartPage() {
                   <CardContent className="p-6">
                     <div className="flex gap-6">
                       <img
-                        src={item.product.image_url || ''}
+                        src={resolveImageUrl(item.product.image_url)}
                         alt={item.product.name}
                         className="w-24 h-24 object-cover rounded-lg"
                       />

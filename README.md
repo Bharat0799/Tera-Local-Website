@@ -1,5 +1,3 @@
-
-
 ## Project Info
 
 ## Project Directory
@@ -85,6 +83,16 @@ Alternatively, use the official installer: Visit the Node.js official website. D
 ### How to develop backend services?
 
 Configure environment variables and install relevant dependencies.If you need to use a database, please use the official version of Supabase.
+
+## GitHub Pages deployment
+
+The `Deploy to GitHub Pages` workflow builds the Vite app from `main` and publishes only `dist/`.
+Before the first deployment, set the repository Actions variables `VITE_SUPABASE_URL` and
+`VITE_SUPABASE_ANON_KEY`, then set **Settings → Pages → Build and deployment → Source** to
+**GitHub Actions**. These `VITE_` values are included in browser code; use only the public
+Supabase anon key, never a service-role key or other private server secret.
+
+The frontend workflow does not deploy the existing Supabase Edge Functions or database migrations.
 
 ## Learn More
 
