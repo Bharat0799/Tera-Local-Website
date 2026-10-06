@@ -87,8 +87,8 @@ Configure environment variables and install relevant dependencies.If you need to
 ## GitHub Pages deployment
 
 The `Deploy to GitHub Pages` workflow builds the Vite app from `main` and publishes only `dist/`.
-Before the first deployment, set the repository Actions variables `VITE_SUPABASE_URL` and
-`VITE_SUPABASE_ANON_KEY`, then set **Settings → Pages → Build and deployment → Source** to
+Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` under **Settings → Secrets and variables →
+Actions → Variables**. Also set **Settings → Pages → Build and deployment → Source** to
 **GitHub Actions**. These `VITE_` values are included in browser code; use only the public
 Supabase anon key, never a service-role key or other private server secret.
 
